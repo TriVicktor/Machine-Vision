@@ -261,11 +261,7 @@ def _ellipse_to_warp_polygon(foot_x, foot_y, bw, bh,
                               M, num_pts=24):
     """
     Lấy các điểm trên viền ellipse chân (tâm foot_x, foot_y; bán trục
-    max(15, bw/2) và max(5, bh/2)) ở hệ tọa độ ảnh img, quy đổi về hệ tọa độ
-    cropped_img_2, rồi chiếu qua homography M.
-    Lưu ý: homography biến một ellipse thành một conic tổng quát (không còn
-    chắc là ellipse), nên ta xấp xỉ kết quả bằng đa giác nối các điểm đã
-    chiếu - đủ chính xác cho mục đích vẽ heatmap.
+    max(15, bw/2) và max(5, bh/2)) ở hệ tọa độ ảnh img, quy đổi về hệ tọa độ cropped_img_2, rồi chiếu qua homography M.
     """
     axis_x = max(15, bw // 2)
     axis_y = max(5, bh // 2)
@@ -287,8 +283,7 @@ def update_heatmap(heatmap_accum, foot_point, foot_size,
                     M, width_warp, height_warp,
                     max_value=HEATMAP_MAX, ink=2.0):
     """
-    Vẽ TOÀN BỘ ellipse chân (không chỉ 1 điểm) vào heatmap, sau khi chiếu
-    qua homography M. Mỗi frame cộng thêm `ink` vào vùng ellipse đó,
+    Vẽ TOÀN BỘ ellipse chân vào heatmap, sau khi chiếu qua homography M. Mỗi frame cộng thêm `ink` vào vùng ellipse đó,
     nhưng clamp (np.clip) tại max_value để tránh cộng dồn vô hạn / tràn -
     khi 1 pixel đã đạt max_value thì giữ nguyên, không cộng thêm nữa.
     """
@@ -322,11 +317,8 @@ def update_heatmap(heatmap_accum, foot_point, foot_size,
 def generate_paper_heatmap(heatmap_accum, warped_frame, height_warp, width_warp,
                             max_value=HEATMAP_MAX, threshold=3, alpha=0.55):
     """
-    Phủ heatmap LÊN ẢNH SÂN ĐÃ WARP (warped_frame) - chứ không phải nền màu
-    trừu tượng - để vẫn nhìn thấy sân, vạch, lưới cầu lông.
-
-    - Thang màu JET dùng mốc CỐ ĐỊNH 0 -> max_value (không normalize động
-      theo max hiện tại), nên màu không bị "trôi/nhạt" theo thời gian.
+    Phủ heatmap LÊN ẢNH SÂN ĐÃ WARP (warped_frame)
+    - Thang màu JET dùng mốc CỐ ĐỊNH 0 -> max_value (không normalize động theo max hiện tại), nên màu không bị "trôi/nhạt" theo thời gian.
     - Vùng chưa có ai đi qua (giá trị ~0) -> giữ nguyên ảnh sân gốc.
     - Vùng có tích lũy -> chồng màu JET lên ảnh sân:
         xanh biển = di chuyển ít, xanh lá = trung bình, đỏ = nhiều
